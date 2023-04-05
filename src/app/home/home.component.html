@@ -1,0 +1,161 @@
+<h2>Learning Management System</h2>
+<div class="row"
+  style="display: flex; justify-content:space-between; background-color: rgb(247, 247, 247); padding: 20px; border-radius: 10px;">
+  <div class="form-group">
+    <label style="font-size: 15px; color: black; font-weight: bold;" for="technology">Technology</label>
+    <input type="text" class="form-control" [(ngModel)]="technology" name="technology" />
+  </div>
+  <div class="form-group">
+    <label style="font-size: 15px; color: black; font-weight: bold;" for="technology">Duration From</label>
+    <input type="number" class="form-control" [(ngModel)]="from" name="technology" />
+  </div>
+  <div class="form-group">
+    <label style="font-size: 15px; color: black; font-weight: bold;" for="technology">Duration To</label>
+    <input type="number" class="form-control" [(ngModel)]="to" name="technology" />
+  </div>
+  <div class="form-group" style="margin-top: 30px;">
+    <button (click)="onSearch()" class="btn btn-primary btn-block" style="padding-left: 50px; padding-right: 50px;">
+      Search
+    </button>
+  </div>
+
+
+</div>
+
+<p style="text-align: center; color: rgb(207, 23, 23);">{{error}}</p>
+
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <h3>List of Courses</h3>
+  <div class="row">
+    <div class="form-group" style="margin-top: 30px;">
+      <button (click)="GetAll()" class="btn btn-outline-secondary" style="padding-left: 20px; padding-right: 20px;">
+        Reset
+      </button>
+    </div>
+    <div class="form-group" style="margin-top: 30px; margin-left: 10px;" *ngIf="currentUser.role == 'admin'">
+      <button (click)="open(mymodal)" class="btn btn-outline-primary" style="padding-left: 40px; padding-right: 40px;">
+        Add Course
+      </button>
+    </div>
+  </div>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Course Name</th>
+      <th scope="col">Description</th>
+      <th scope="col">Technology</th>
+      <th scope="col">Duration</th>
+      <th scope="col">Launch Url</th>
+      <th *ngIf="currentUser.role == 'admin'" scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let course of courses; let i = index">
+      <th scope="row"> {{ i + 1 }}</th>
+      <td>{{course.name}}</td>
+      <td>{{course.description}}</td>
+      <td>{{course.technology}}</td>
+      <td>{{course.duration}}</td>
+      <td><a [href]="course.launchURL">{{course.launchURL}}</a></td>
+      <td *ngIf="currentUser.role == 'admin'">
+        <button (click)="openDelete(deleteModal, course)" class="btn btn-danger">
+          Delete
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #mymodal let-modal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Add New Course</h5>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+        <div class="form-group">
+          <label for="username">Course Name:</label>
+          <input type="text" class="form-control" name="username" [(ngModel)]="form.name" required
+            #username="ngModel" />
+          <p style="color: rgb(207, 23, 23); font-size: 12px;" *ngIf="username.errors && f.submitted">
+            Course Name is required!
+          </p>
+        </div>
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <input type="text" class="form-control" name="description" [(ngModel)]="form.description" required
+            #description="ngModel" />
+          <p style="color: rgb(207, 23, 23); font-size: 12px;" *ngIf="description.errors && f.submitted">
+            Description is required!
+          </p>
+        </div>
+
+        <div class="row"
+          style="display: flex; justify-content: space-between; padding-left: 20px; padding-right: 20px;">
+          <div class="form-group">
+            <label for="technology">Technology:</label>
+            <input type="text" class="form-control" name="technology" [(ngModel)]="form.technology" required
+              #technology="ngModel" />
+            <p style="color: rgb(207, 23, 23); font-size: 12px;" *ngIf="technology.errors && f.submitted">
+              Technology is required!
+            </p>
+          </div>
+          <div class="form-group">
+            <label for="duration">Duration:</label>
+            <input type="text" class="form-control" name="duration" [(ngModel)]="form.duration" required
+              #duration="ngModel" />
+            <p style="color: rgb(207, 23, 23); font-size: 12px;" *ngIf="duration.errors && f.submitted">
+              Duration is required!
+            </p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="launchURL">Launch URL:</label>
+          <input type="text" class="form-control" name="launchURL" [(ngModel)]="form.launchURL" required
+            #launchURL="ngModel" />
+          <p style="color: rgb(207, 23, 23); font-size: 12px;" *ngIf="launchURL.errors && f.submitted">
+            Launch URL is required!
+          </p>
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-primary btn-block">
+            Add Course
+          </button>
+        </div>
+        <p style="color: rgb(207, 23, 23); font-size: 12px; text-align: center;">{{errorFinal}}</p>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.close('Save click')">Close</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #deleteModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Course deletion</h4>
+    <button type="button" class="btn-close" aria-describedby="modal-title"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <p style="color: rgb(207, 23, 23); text-align: center;">{{errorFinal}}</p>
+  <div class="modal-body">
+    <p><strong>Are you sure you want to delete <span class="text-primary">{{selectedCourse.name}}</span> Course?</strong></p>
+    <p>All information associated to this course will be permanently deleted.
+      <span class="text-danger">This operation can not be undone.</span>
+    </p>
+  </div>
+  <div class="modal-footer">
+    
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="deleteCourse()">Ok</button>
+  </div>
+  
+</ng-template>
